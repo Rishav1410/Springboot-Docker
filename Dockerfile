@@ -4,10 +4,12 @@ FROM maven:3.9.4-eclipse-temurin-17 AS builder
 # Set working directory inside the container
 WORKDIR /app
 
-# Copy all files to the container
-COPY . .
+# Copy the pom.xml first and download dependencies to get cached
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# Build the Spring Boot application
+# Now copying the src folder
+COPY src src
 RUN mvn clean package -DskipTests
 
 # ========== Stage 2: Run the application ==========
